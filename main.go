@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/kswarthout/sudoku/api/sudoku"
@@ -55,9 +56,18 @@ func Routes() *mux.Router {
 	// Register Routes
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/puzzle", getPuzzle).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(getPort(), router))
 
 	return router
+}
+
+func getPort() string {
+	var port = os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
+	return ":" + port
 }
 
 func main() {
