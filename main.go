@@ -12,12 +12,13 @@ import (
 	"github.com/kswarthout/sudoku/api/sudoku"
 )
 
+// puzzle models the JSON response from getPuzzle endpoint
 type puzzle struct {
 	Sln   string `json:"sln"`
 	Start string `json:"start"`
 }
 
-// SendJSON marshals v to a json struct and send the appropriate headers to w
+// sendJSON marshals v to a json struct and send the appropriate headers to w
 func sendJSON(w http.ResponseWriter, r *http.Request, v interface{}, code int) {
 	w.Header().Add("Content-Type", "application/json")
 
@@ -33,6 +34,7 @@ func sendJSON(w http.ResponseWriter, r *http.Request, v interface{}, code int) {
 	}
 }
 
+// getPuzzle returns a Sodoku grid start and solution in an encoded string
 func getPuzzle(w http.ResponseWriter, r *http.Request) {
 
 	p := puzzle{}
@@ -46,11 +48,20 @@ func getPuzzle(w http.ResponseWriter, r *http.Request) {
 	sudoku.RemoveNumbers(&board)
 	p.Start = sudoku.ParseGrid(board)
 
-	// p := puzzle{sln, start}
 	sendJSON(w, r, p, http.StatusOK)
 }
 
-// Routes configures all API routes
+// getPort returns the port specified by the host environment, or 8080 if not port is set
+func getPort() string {
+	var port = os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
+	return ":" + port
+}
+
+// Routes configures API endpoints
 func Routes() *mux.Router {
 
 	// Register Routes
@@ -59,15 +70,6 @@ func Routes() *mux.Router {
 	log.Fatal(http.ListenAndServe(getPort(), router))
 
 	return router
-}
-
-func getPort() string {
-	var port = os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
-	}
-	return ":" + port
 }
 
 func main() {

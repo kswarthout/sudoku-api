@@ -50,10 +50,12 @@ func RemoveNumbers(b *[9][9]int) {
 	}
 }
 
+// randInt returns a random int between max and min
 func randInt(min int, max int) int {
 	return min + rand.Intn(max-min)
 }
 
+// numInSlice returns true if a is in list, otherwise false
 func numInSlice(a int, list [9]int) bool {
 	for _, b := range list {
 		if b == a {
